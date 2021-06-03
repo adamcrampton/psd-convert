@@ -42,6 +42,21 @@ return [
             'visibility' => 'public',
         ],
 
+        'conversions' => [
+            'driver' => 'local',
+            'root' => storage_path('conversions'),
+            'url' => null,
+            'visibility' => 'public'
+        ],
+
+        'smb' => [
+            'host' => env('SMB_HOST', 'localhost'),
+            'user' => env('SMB_USER', ''),
+            'domain' => env('SMB_DOMAIN', ''),
+            'password' => env('SMB_PASSWORD', ''),
+            'share' => env('SMB_SHARE', '')
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
