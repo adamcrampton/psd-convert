@@ -106,11 +106,22 @@ class BatchRename extends Command
             // Extract dimensions and rename file.
             else: 
                 $this->info('Found file ' . $item->getName() . ' - renaming...');
-                $this->share->get($item->getPath(), storage_path('renaming/temp') . '/' . $item->getName());
 
-                $image = $this->image->make(
-                            storage_path('renaming/temp/' . $item->getName())
-                        );
+                try {
+                    $this->share->get($item->getPath(), storage_path('renaming/temp') . '/' . $item->getName());
+                } catch (\Throwable $th) {
+                    $this->error('Error getting copy of file: ' . $th->getMessage() . ' - skipping...');
+                    continue;
+                }
+
+                try {
+                    $image = $this->image->make(
+                                storage_path('renaming/temp/' . $item->getName())
+                            );
+                } catch (\Throwable $th) {
+                    $this->error('Error creating file object: ' . $th->getMessage());
+                    continue;
+                }
 
                 // Construct new file name.
                 $name = Str::beforeLast($item->getName(), '.');
@@ -122,7 +133,12 @@ class BatchRename extends Command
                 $dest = $pathSplit[0] . '/' . $pathSplit[1];
 
                 // Rename file.
-                $this->share->rename($item->getPath(), $dest . '/' . $fileName, $item);
+                try {
+                    $this->share->rename($item->getPath(), $dest . '/' . $fileName, $item);
+                } catch (\Throwable $th) {
+                    $this->error('Error renaming file: ' . $th->getMessage());
+                    continue;
+                }
             endif;
         endforeach;
     }
